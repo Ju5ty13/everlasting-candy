@@ -28,7 +28,6 @@ func _ready() -> void:
 	if world_textures:
 		NodeSprite.texture = world_textures.pick_random()
 
-
 func _physics_process(delta):
 	if not interactive:
 		return
@@ -56,6 +55,7 @@ func _physics_process(delta):
 	velocity = vel
 	move_and_slide()
 	position = global.wrapp(position)
+
 	# check for Goobers
 	var hit = Overlap()
 	if !hit:
@@ -77,28 +77,28 @@ func _physics_process(delta):
 	else:
 		TryLoop("Jump")
 
-
+# This function checks for overlap with the Goober and applies appropriate actions
 func Overlap():
 	var hit = false
 
 	for o in NodeArea2D.get_overlapping_areas():
 		var par = o.get_parent()
-		print ("Overlapping: ", par.name)
+		print("Overlapping: ", par.name)
 
 		if par is Goober:
 			var above = position.y - 1 < par.position.y
 
 			if onFloor or (vel.y < 0.0 and !above):
+				# Player dies when hitting a Goober
 				died.emit()
 			else:
 				hit = true
 				jump = Input.is_action_pressed("jump")
 				vel.y = -jumpSpd * (1.0 if jump else 0.6)
-
 				stomped.emit(par)
 	return hit
 
-func TryLoop(arg : String):
+func TryLoop(arg: String):
 	if arg == NodeAnim.current_animation:
 		return false
 	else:
